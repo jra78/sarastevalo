@@ -3,6 +3,7 @@
 Dawn simulator
 ds1307
 Omron A7D thumbwheel
+74165
 
 */
 //#define F_CPU 16000000  //not needed in arduino
@@ -32,7 +33,9 @@ const int DOWNpin =3  ;
 
 volatile int pwm =0;
 
-
+//encoder stop or speedup
+int estop = 0;
+int espeedup = 0;
 
 void setup() {
   
@@ -63,7 +66,7 @@ bool conf()
   {
     digitalWrite (PWMpin, HIGH);
   } //stay this line until time is set, accept set time with knob twist
-// reuse alarm functions to read time to set to RTC (only hours and minutes, date, month and year cant cange at the moment
+// reuse alarm functions to read time to set to RTC (only hours and minutes. date, month and year cant cange at the moment
    unsigned int alarm = readsetalarmbin();
   hours = alarmhours (alarm);
   minutes =alarmminutes (alarm);    
@@ -83,9 +86,9 @@ bool conf()
     if (RTC.write(tm)) 
     {
       digitalWrite (PWMpin, HIGH);
-      delay (5);
+      delay (50);
             digitalWrite (PWMpin, LOW);
-            delay (5);
+            delay (50);
 
                  digitalWrite (PWMpin, HIGH);
 delay(200);
@@ -111,7 +114,10 @@ void encoder()
  {
    if (pwm>254)
    {
-    pwm =0; 
+     if (estop==0)
+     {
+       pwm =0; 
+     }  
    }
    else 
    {
@@ -123,7 +129,10 @@ void encoder()
  {
    if (pwm<1)
    {
-    pwm =255; 
+     if (estop==0)
+     {
+       pwm =255; 
+     }  
    }
    else
   pwm-- ;
@@ -365,6 +374,17 @@ if (hours>23 || minutes>59)
   { 
     conf();
   } 
+
+  
+//prevent encoder to move too fast drom pwm 0 to255 or 255 to 0
+
+if (pwm == 0 || pwm ==255)
+  {
+    estop = 1;
+    delay (300);
+    estop =0;
+    delay (700);
+  }
 }
 
 
