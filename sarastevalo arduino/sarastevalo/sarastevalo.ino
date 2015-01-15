@@ -34,7 +34,7 @@ const int DOWNpin =3  ;
 volatile int pwm =0;
 
 //encoder stop or speedup
-int estop = 0;
+int estop = 1;
 int espeedup = 0;
 
 void setup() {
@@ -133,6 +133,7 @@ void encoder()
      {
        pwm =255; 
      }  
+     
    }
    else
   pwm-- ;
@@ -364,7 +365,7 @@ if (hours>23 || minutes>59)
 {
   int oldhours=hours;
   int oldminutes=minutes;
-  delay (250);
+  delay (500);
   //debounce
   alarm = readsetalarmbin();
   hours = alarmhours (alarm);
@@ -374,9 +375,9 @@ if (hours>23 || minutes>59)
   { 
     conf();
   } 
-
+}
   
-//prevent encoder to move too fast drom pwm 0 to255 or 255 to 0
+//prevent encoder to move too fast straight from pwm 0 to255 or 255 to 0
 
 if (pwm == 0 || pwm ==255)
   {
@@ -385,7 +386,8 @@ if (pwm == 0 || pwm ==255)
     estop =0;
     delay (700);
   }
-}
+  
+
 
 
 
